@@ -1,9 +1,13 @@
 import os
-import django
-from bake_cake_bot.dispatcher import run_pooling
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bake_cake.settings')
-django.setup()
+import django
+from django.conf import settings
+
+if not settings.configured:
+    django.setup()
+
+from bake_cake_bot.dispatcher import run_pooling
 
 
 if __name__ == "__main__":
