@@ -3,7 +3,7 @@ from .static_text import start_button_text
 
 
 def build_menu(buttons, n_cols):
-    print('build_menu')
+    print('auth_menu')
     return [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
 
 

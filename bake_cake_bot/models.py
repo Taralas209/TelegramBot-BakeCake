@@ -24,32 +24,17 @@ class Users(UUIDMixin, TimeStampedMixin):
     username = models.CharField(
         max_length=64,
         null=True,
-        blank=False,
         verbose_name='User Name'
     )
-    first_name = models.CharField(
+    name = models.CharField(
         max_length=256,
         null=True,
-        blank=False,
-        verbose_name='First Name'
+        verbose_name='Name'
     )
-    last_name = models.CharField(
-        max_length=256,
-        null=True,
-        blank=True,
-        verbose_name='Last Name'
-    )
-    phone_number = models.CharField(
+    phone = models.CharField(
         max_length=20,
         null=True,
-        blank=True,
         verbose_name='Phone Number'
-    )
-    email = models.CharField(
-        max_length=50,
-        null=True,
-        blank=True,
-        verbose_name='email'
     )
     is_admin = models.BooleanField(
         null=True,
@@ -57,6 +42,8 @@ class Users(UUIDMixin, TimeStampedMixin):
         default=False,
         verbose_name='Администратор'
     )
+    registration = models.DateTimeField(default=timezone.now)
+
 
     def __str__(self):
         if self.username:
