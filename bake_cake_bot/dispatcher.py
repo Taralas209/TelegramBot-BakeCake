@@ -13,7 +13,12 @@ bot_handlers = ConversationHandler(
 
     ],
     states={
-        auth_handlers.AUTH_INFO: [MessageHandler(Filters.text & ~Filters.command, auth_handlers.get_auth_info)],
+        auth_handlers.CREATE_USER: [
+            MessageHandler(Filters.text & ~Filters.command, auth_handlers.create_user)
+        ],
+        auth_handlers.USER_PHONE: [
+            MessageHandler(Filters.text & ~Filters.command, auth_handlers.get_user_phone)
+        ],
 
     },
     fallbacks=[

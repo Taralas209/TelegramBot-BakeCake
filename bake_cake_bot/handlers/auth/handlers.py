@@ -5,8 +5,7 @@ from bake_cake_bot.handlers.auth import static_text
 from bake_cake_bot.models import Users
 from .keyboard_utils import make_keyboard_for_start_command
 
-
-AUTH_INFO = range(1)
+CREATE_USER, USER_PHONE = range(2)
 
 
 def command_start(update: Update, context):
@@ -41,7 +40,11 @@ def get_auth_info(update: Update, _):
             print('registration_request')
             update.message.reply_text(static_text.need_auth)
             #TODO отправка файла соглашения о конфиленциальности в txt
-            return ConversationHandler.END
+            text = static_text.name
+            update.message.reply_text(
+                text=text
+            )
+            return CREATE_USER
         else:
             if user.is_admin:
                 print('admin detected')
@@ -53,5 +56,26 @@ def get_auth_info(update: Update, _):
                 return ConversationHandler.END
 
 
+def create_user(update: Update, user_description):
+    print('create_user, get name')
+    user_description.bot_data['name'] = update.message.text
+    text = static_text.phone
+    update.message.reply_text(
+        text=text
+    )
+    return USER_PHONE
 
 
+def get_user_phone(update: Update, user_description):
+    print('create_user, get phone')
+    user_description.bot_data['phone'] = update.message.text
+    user_info = update.message.from_user.to_dict()
+    user = Users.objects.get(telegram_id=user_info['id'])
+    user.name = user_description.bot_data['name']
+    user.phone = user_description.bot_data['phone']
+    user.save()
+    text = static_text.user_saved
+    update.message.reply_text(
+        text=text
+    )
+    return ConversationHandler.END
