@@ -1,27 +1,19 @@
-import logging
-import sys
-
-import telegram.error
 from telegram import Bot
 from telegram.ext import (CommandHandler, ConversationHandler, Dispatcher,
-                          Filters, MessageHandler, Updater,
-                          CallbackQueryHandler, ShippingQueryHandler)
+                          Filters, MessageHandler, Updater,)
 from bake_cake.settings import TELEGRAM_TOKEN
 from bake_cake_bot.handlers.auth import handlers as auth_handlers
 from bake_cake_bot.handlers.admin import handlers as admin_handlers
 from bake_cake_bot.handlers.customer import handlers as customer_handlers
 
 
-meetup_handlers = ConversationHandler(
+bot_handlers = ConversationHandler(
     entry_points=[
-        # MessageHandler(Filters.regex('^(Авторизация)$'),
-        #                auth_handlers.auth),
+        MessageHandler(Filters.regex('^(Авторизация)$'), auth_handlers.get_auth_info),
 
     ],
     states={
-        auth_handlers.AUTH_INFO: [
-            MessageHandler(Filters.text & ~Filters.command, auth_handlers.get_auth_info)
-        ],
+        auth_handlers.AUTH_INFO: [MessageHandler(Filters.text & ~Filters.command, auth_handlers.get_auth_info)],
 
     },
     fallbacks=[
@@ -30,11 +22,18 @@ meetup_handlers = ConversationHandler(
 )
 
 
+def setup_dispatcher(dp):
+    dp.add_handler(bot_handlers)
+    dp.add_handler(CommandHandler("start", auth_handlers.command_start))
+    return dp
+
+
 def run_pooling():
     """ Run bot in pooling mode """
     updater = Updater(TELEGRAM_TOKEN, use_context=True)
 
-    dp = updater.dispatcher.add_handler(CommandHandler("start", auth_handlers.command_start))
+    dp = updater.dispatcher
+    dp = setup_dispatcher(dp)
 
     bot_info = Bot(TELEGRAM_TOKEN).get_me()
     bot_link = f'https://t.me/{bot_info["username"]}'
