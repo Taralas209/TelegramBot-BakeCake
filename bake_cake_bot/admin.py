@@ -43,3 +43,7 @@ class UsersAdmin(admin.ModelAdmin):
 class UsersAdmin(admin.ModelAdmin):
     list_display = ['name', 'price']
 
+
+@admin.register(Complaint)
+class UsersAdmin(admin.ModelAdmin):
+    list_display = ['order', 'user', 'text']

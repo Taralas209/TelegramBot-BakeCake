@@ -181,3 +181,19 @@ class Cake(models.Model):
         blank=True
     )
     
+class Complaint(models.Model):
+
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.SET_NULL,
+        null = True
+    )
+    user = models.ForeignKey(
+        Users,
+        on_delete=models.SET_NULL,
+        null = True
+    )
+
+    text = models.TextField(
+        verbose_name='Текст сообщения'
+    )
