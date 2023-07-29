@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 from django.utils import timezone
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class TimeStampedMixin(models.Model):
@@ -21,29 +22,11 @@ class UUIDMixin(models.Model):
 
 class Users(UUIDMixin, TimeStampedMixin):
     telegram_id = models.IntegerField(unique=True, default=False)
-    username = models.CharField(
-        max_length=64,
-        null=True,
-        verbose_name='User Name'
-    )
-    name = models.CharField(
-        max_length=256,
-        null=True,
-        verbose_name='Name'
-    )
-    phone = models.CharField(
-        max_length=20,
-        null=True,
-        verbose_name='Phone Number'
-    )
-    is_admin = models.BooleanField(
-        null=True,
-        blank=True,
-        default=False,
-        verbose_name='Администратор'
-    )
+    username = models.CharField(max_length=64, null=True, verbose_name='UserName')
+    name = models.CharField(max_length=256, null=True, verbose_name='Имя')
+    phone = PhoneNumberField(verbose_name='Номер телефона', blank=True)
+    is_admin = models.BooleanField(null=True, blank=True, default=False, verbose_name='Администратор')
     registration = models.DateTimeField(default=timezone.now)
-
 
     def __str__(self):
         if self.username:
