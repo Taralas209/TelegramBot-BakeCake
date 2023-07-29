@@ -86,10 +86,11 @@ def get_main_menu(update: Update, _):
         update.message.reply_text(text='ТУТ БУДЕТ МЕНЮ ИСТОРИЯ ЗАКАЗОВ')
         return MAIN_MENU
     elif customer_choise == static_text.main_menu_button_text[3]:
-        update.message.reply_text(text='ТУТ БУДЕТ МЕНЮ КОНТАКТЫ')
+        update.message.reply_text(text=static_text.contacts)
+        update.message.reply_text(text=static_text.something_else, reply_markup=make_main_menu_keyboard())
         return MAIN_MENU
     else:
-        update.message.reply_text(text=static_text.choose_option, reply_markup=make_main_menu_keyboard())
+        update.message.reply_text(text=static_text.not_text_enter, reply_markup=make_main_menu_keyboard())
         return MAIN_MENU # Вернет меню на случай ручного ввода
 
 
