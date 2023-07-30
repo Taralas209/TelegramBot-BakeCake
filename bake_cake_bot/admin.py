@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from bake_cake_bot.models import Users
+from bake_cake_bot.models import *
 
 
 @admin.register(Users)

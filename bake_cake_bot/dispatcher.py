@@ -21,6 +21,12 @@ bot_handlers = ConversationHandler(
         handlers.MAIN_MENU: [
             MessageHandler(Filters.text & ~Filters.command, handlers.get_main_menu)
         ],
+        handlers.ORDER: [
+            MessageHandler(Filters.text & ~Filters.command, handlers.get_order)
+        ],
+        handlers.ORDER_CAKE: [
+            MessageHandler(Filters.text & ~Filters.command, handlers.get_order_for_cakes)
+        ],
     },
     fallbacks=[
         CommandHandler("cancel", handlers.command_cancel)
