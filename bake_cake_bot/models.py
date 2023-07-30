@@ -155,13 +155,14 @@ class Cake(models.Model):
     name = models.CharField(max_length=30, null=True, blank=True)
     layer = models.OneToOneField(Layer,  on_delete=models.SET_NULL, null=True)
     shape = models.OneToOneField(Shape,  on_delete=models.SET_NULL, null=True)
-    topping = models.OneToOneField(Topping, on_delete=models.SET_NULL, null=True)
-    berries = models.OneToOneField(Berries, on_delete=models.SET_NULL, null=True)
-    decor = models.OneToOneField(Decor, on_delete=models.SET_NULL, null=True)
+    topping = models.OneToOneField(Topping, on_delete=models.SET_NULL, null=True, blank=True)
+    berries = models.OneToOneField(Berries, on_delete=models.SET_NULL, null=True, blank=True)
+    decor = models.OneToOneField(Decor, on_delete=models.SET_NULL, null=True, blank=True)
     text = models.TextField(
         verbose_name='Надпись на торте',
         max_length=200,
-        blank=True
+        blank=True,
+        null=True
     )
     ready_to_order = models.BooleanField(default=False)
     price = models.FloatField(default=0.0)
