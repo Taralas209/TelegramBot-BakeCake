@@ -2,11 +2,13 @@ from telegram import Update
 from telegram.ext import ConversationHandler, CallbackContext
 
 from . import static_text
-from bake_cake_bot.models import Users
-from .keyboard_utils import make_keyboard_for_start_command, make_main_menu_keyboard
+from bake_cake_bot.models import Users, Cake
+from .keyboard_utils import make_keyboard_for_start_command, make_main_menu_keyboard, make_order_menu_keyboard, \
+    make_keyboard_for_ready_to_order, make_decor_keyboard, make_shape_keyboard, make_berries_keyboard, \
+    make_topping_keyboard, make_layer_keyboard
 
 
-AUTH, CREATE_USER, USER_PHONE, MAIN_MENU = range(4)
+AUTH, CREATE_USER, USER_PHONE, MAIN_MENU, ORDER, ORDER_CAKE = range(6)
 
 
 def command_start(update: Update, context):
@@ -77,8 +79,25 @@ def get_main_menu(update: Update, _):
     print('get_customer_menu')
     customer_choise = update.message.text
     if customer_choise == static_text.main_menu_button_text[0]:
-        update.message.reply_text(text='ТУТ БУДЕТ МЕНЮ ЗАКАЗА')
-        return MAIN_MENU
+        print('get_order')
+        update.message.reply_text(text=static_text.ready_to_order)
+        cakes = Cake.objects.all()
+        for cake in cakes:
+            if cake.ready_to_order:
+                ready_to_order_cake = (
+                    f'{cake.name}\n'
+                    f'------------\n'
+                    f'Количество слоев - {cake.layer}\n'
+                    f'Форма - {cake.shape}\n'
+                    f'Топпинг - {cake.topping}\n'
+                    f'Ягоды - {cake.berries}\n'
+                    f'Декор - {cake.decor}\n'
+                    f'Текст на торте - {cake.text}\n'
+                    f'------------\n'
+                    f'Цена - {cake.price}ру.'
+                )
+                update.message.reply_text(text=ready_to_order_cake, reply_markup=make_order_menu_keyboard())
+        return ORDER
     elif customer_choise == static_text.main_menu_button_text[1]:
         update.message.reply_text(text='ТУТ БУДЕТ МЕНЮ ПРОВЕРИТЬ ЗАКАЗ')
         return MAIN_MENU
@@ -94,7 +113,23 @@ def get_main_menu(update: Update, _):
         return MAIN_MENU # Вернет меню на случай ручного ввода
 
 
+def get_order(update: Update, _):
+    customer_choise = update.message.text
+    if customer_choise == static_text.order_buttons[0]:
+        update.message.reply_text(text=static_text.ready_order, reply_markup=make_keyboard_for_ready_to_order())
+        return ORDER_CAKE
+    elif customer_choise == static_text.order_buttons[1]:
+        update.message.reply_text(text=static_text.ready_order, reply_markup=make_keyboard_for_ready_to_order())
+    else:
+        return MAIN_MENU # Вернет меню на случай ручного ввода
+
+
 def command_cancel(update: Update, _):
     print('command_cancel')
     update.message.reply_text(text=static_text.cancel_text)
     return ConversationHandler.END
+
+
+def get_order_for_cakes():
+    pass
+    #TODO:Вызывается после выбора торта в меню заказа. Далее необходимо собрать адрес доставки, вычислить время заказа и указать время доставки. Может еще что забыл
