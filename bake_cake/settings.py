@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'phonenumber_field',
     'bake_cake_bot',
+    'Bitly_Shortner',
 ]
 
 MIDDLEWARE = [
