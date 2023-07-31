@@ -35,8 +35,8 @@ class Users(UUIDMixin, TimeStampedMixin):
             return f'{self.telegram_id}'
 
     class Meta:
-        verbose_name = 'User'
-        verbose_name_plural = 'Users'
+        verbose_name = 'Заказчик'
+        verbose_name_plural = 'Заказчики'
 
 
 class Order(models.Model):
@@ -80,6 +80,10 @@ class Order(models.Model):
     def __str__(self):
         return f'Заказ номер {self.number}'
 
+    class Meta:
+        verbose_name = 'Заказ'
+        verbose_name_plural = 'Заказы'
+
 
 class Layer(models.Model):
     name = models.CharField(
@@ -93,6 +97,10 @@ class Layer(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = 'Слой'
+        verbose_name_plural = 'Слои'
 
 
 class Shape(models.Model):
@@ -108,6 +116,10 @@ class Shape(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Форма'
+        verbose_name_plural = 'Формы'
+
 
 class Topping(models.Model):
     name = models.CharField(
@@ -121,6 +133,10 @@ class Topping(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = 'Топинг'
+        verbose_name_plural = 'Топинги'
 
 
 class Berries(models.Model):
@@ -136,6 +152,10 @@ class Berries(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Ягода'
+        verbose_name_plural = 'Ягоды'
+
 
 class Decor(models.Model):
     name = models.CharField(
@@ -149,6 +169,10 @@ class Decor(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = 'Декор'
+        verbose_name_plural = 'Декор'
 
 
 class Cake(models.Model):
@@ -170,6 +194,10 @@ class Cake(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Торт'
+        verbose_name_plural = 'Торты'
+
 
 class Complaint(models.Model):
 
@@ -187,3 +215,7 @@ class Complaint(models.Model):
     text = models.TextField(
         verbose_name='Текст сообщения'
     )
+
+    class Meta:
+        verbose_name = 'Жалоба'
+        verbose_name_plural = 'Обратная связь'
