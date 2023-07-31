@@ -19,7 +19,7 @@ def command_start(update: Update, context):
         user_info = {'id': context.user_data['user_id'], 'username': context.user_data['username'],
                      'first_name': context.user_data['first_name']}
 
-    user, created = Users.objects.get_or_create(telegram_id=user_info['id'], username=user_info['username'])
+    user, created = Users.objects.get_or_create(telegram_id=user_info['id'])
 
     if created:
         text = static_text.start_created.format(first_name=user_info['first_name'])
@@ -180,6 +180,6 @@ def command_cancel(update: Update, _):
     return ConversationHandler.END
 
 
-def get_order_for_cakes():
+def get_order_for_cakes(update: Update, _):
     pass
     #TODO:Вызывается после выбора торта в меню заказа. Далее необходимо собрать адрес доставки, вычислить время заказа и указать время доставки. Может еще что забыл
