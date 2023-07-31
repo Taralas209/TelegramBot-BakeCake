@@ -43,7 +43,7 @@ def get_auth_info(update: Update, _: CallbackContext):
         if not user.phone:
             print('registration_request')
             update.message.reply_text(static_text.need_auth)
-            with open('./static/agreement.txt', 'r') as agreement:
+            with open('./static/agreement.txt', 'r', encoding='cp1251') as agreement:
                 update.message.reply_document(document=agreement)
             update.message.reply_text(text=static_text.name)
             return CREATE_USER
@@ -180,6 +180,6 @@ def command_cancel(update: Update, _):
     return ConversationHandler.END
 
 
-def get_order_for_cakes():
+def get_order_for_cakes(update: Update, context: CallbackContext):
     pass
     #TODO:Вызывается после выбора торта в меню заказа. Далее необходимо собрать адрес доставки, вычислить время заказа и указать время доставки. Может еще что забыл
