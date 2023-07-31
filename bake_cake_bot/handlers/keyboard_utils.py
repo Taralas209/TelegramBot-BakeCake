@@ -1,6 +1,6 @@
 from telegram import ReplyKeyboardMarkup, KeyboardButton
 from .static_text import start_button_text, main_menu_button_text, order_buttons
-from bake_cake_bot.models import Cake
+from bake_cake_bot.models import Cake, Topping, Shape, Layer, Berries, Decor
 
 
 def build_menu(buttons, n_cols):
@@ -62,20 +62,80 @@ def make_keyboard_for_ready_to_order() -> ReplyKeyboardMarkup:
 
 
 def make_shape_keyboard() -> ReplyKeyboardMarkup:
-    pass
+    shapes = Shape.objects.all()
+    shapes_name = []
+    for shape in shapes:
+        shapes_name.append(shape.name)
+
+    buttons = [KeyboardButton(choose) for choose in shapes_name]
+
+    reply_markup = ReplyKeyboardMarkup(
+        build_menu(buttons, n_cols=3),
+        resize_keyboard=True,
+        one_time_keyboard=True
+    )
+    return reply_markup
 
 
 def make_layer_keyboard() -> ReplyKeyboardMarkup:
-    pass
+    layers = Layer.objects.all()
+    layers_name = []
+    for layer in layers:
+        layers_name.append(layer.name)
+
+    buttons = [KeyboardButton(choose) for choose in layers_name]
+
+    reply_markup = ReplyKeyboardMarkup(
+        build_menu(buttons, n_cols=3),
+        resize_keyboard=True,
+        one_time_keyboard=True
+    )
+    return reply_markup
 
 
 def make_decor_keyboard() -> ReplyKeyboardMarkup:
-    pass
+    decors = Decor.objects.all()
+    decors_name = []
+    for decor in decors:
+        decors_name.append(decor.name)
+    decors_name.append('Без декора')
+    buttons = [KeyboardButton(choose) for choose in decors_name]
+
+    reply_markup = ReplyKeyboardMarkup(
+        build_menu(buttons, n_cols=3),
+        resize_keyboard=True,
+        one_time_keyboard=True
+    )
+    return reply_markup
 
 
 def make_berries_keyboard() -> ReplyKeyboardMarkup:
-    pass
+    berries = Berries.objects.all()
+    berries_name = []
+    for berry in berries:
+        berries_name.append(berry.name)
+    berries_name.append('Без ягод')
+    buttons = [KeyboardButton(choose) for choose in berries_name]
+
+    reply_markup = ReplyKeyboardMarkup(
+        build_menu(buttons, n_cols=3),
+        resize_keyboard=True,
+        one_time_keyboard=True
+    )
+    return reply_markup
 
 
 def make_topping_keyboard() -> ReplyKeyboardMarkup:
-    pass
+    toppings = Topping.objects.all()
+    toppings_name = []
+    for topping in toppings:
+        toppings_name.append(topping.name)
+    toppings_name.append('Без топпинга')
+    buttons = [KeyboardButton(choose) for choose in toppings_name]
+
+    reply_markup = ReplyKeyboardMarkup(
+        build_menu(buttons, n_cols=3),
+        resize_keyboard=True,
+        one_time_keyboard=True
+    )
+    return reply_markup

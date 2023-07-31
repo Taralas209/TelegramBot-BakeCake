@@ -27,6 +27,21 @@ bot_handlers = ConversationHandler(
         handlers.ORDER_CAKE: [
             MessageHandler(Filters.text & ~Filters.command, handlers.get_order_for_cakes)
         ],
+        handlers.LAYER: [
+            MessageHandler(Filters.text & ~Filters.command, handlers.get_layer)
+        ],
+        handlers.DECOR: [
+            MessageHandler(Filters.text & ~Filters.command, handlers.get_decor)
+        ],
+        handlers.TOPPING: [
+            MessageHandler(Filters.text & ~Filters.command, handlers.get_topping)
+        ],
+        handlers.BERRIES: [
+            MessageHandler(Filters.text & ~Filters.command, handlers.get_berries)
+        ],
+        handlers.CALCULATE: [
+            MessageHandler(Filters.text & ~Filters.command, handlers.calculate_order)
+        ],
     },
     fallbacks=[
         CommandHandler("cancel", handlers.command_cancel)
