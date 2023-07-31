@@ -15,7 +15,7 @@ class UsersAdmin(admin.ModelAdmin):
 
 @admin.register(Cake)
 class UsersAdmin(admin.ModelAdmin):
-    list_display = ['layer', 'shape', 'topping', 'berries', 'decor']
+    list_display = ['name', 'layer', 'shape', 'topping', 'berries', 'decor', 'price']
 
 
 @admin.register(Layer)

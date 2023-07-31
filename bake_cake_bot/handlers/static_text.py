@@ -25,6 +25,9 @@ select_layers = 'Выберете количество слоев'
 select_decor = 'Какой декор добавляем?'
 select_berries = 'Какие ягоды добавить?'
 select_topping = 'Какой топпинг добавить?'
+individual_order = 'Формируем индивидуальный заказ'
+ordering = 'Оформляем заказ'
+address = 'Введите адрес доставки'
 
 # Button text
 start_button_text = ['Авторизация']
