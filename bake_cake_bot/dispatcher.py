@@ -1,5 +1,5 @@
 from telegram import Bot
-from telegram.ext import (CommandHandler, ConversationHandler, Filters, MessageHandler, Updater, )
+from telegram.ext import (CommandHandler, ConversationHandler, Filters, MessageHandler, Updater, PreCheckoutQueryHandler, )
 from bake_cake.settings import TELEGRAM_TOKEN
 from bake_cake_bot.handlers import handlers
 
@@ -43,7 +43,9 @@ bot_handlers = ConversationHandler(
             MessageHandler(Filters.text & ~Filters.command, handlers.calculate_order)
         ],
         handlers.PAY: [
-            MessageHandler(Filters.text & ~Filters.command, handlers.get_pay)
+            MessageHandler(Filters.regex('^Оплатить$'), handlers.get_pay),
+            PreCheckoutQueryHandler(handlers.pre_checkout_query),
+            MessageHandler(Filters.successful_payment, handlers.successful_payment)
         ],
         handlers.READY_ORDER: [
             MessageHandler(Filters.text & ~Filters.command, handlers.get_order_for_ready_cakes)
@@ -58,6 +60,9 @@ bot_handlers = ConversationHandler(
 def setup_dispatcher(dp):
     dp.add_handler(bot_handlers)
     dp.add_handler(CommandHandler("start", handlers.command_start))
+
+    dp.add_handler(PreCheckoutQueryHandler(handlers.pre_checkout_query))
+    dp.add_handler(MessageHandler(Filters.successful_payment, handlers.successful_payment))
     return dp
 
 

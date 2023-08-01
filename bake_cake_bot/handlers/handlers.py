@@ -1,6 +1,5 @@
 import datetime
-
-from telegram import Update
+from telegram import Update, LabeledPrice, PreCheckoutQuery
 from telegram.ext import ConversationHandler, CallbackContext
 
 from . import static_text
@@ -214,9 +213,37 @@ def get_order_for_ready_cakes(update: Update, cake_description):
     return ORDER_CAKE
 
 
-def get_pay(update: Update, cake_description):
+def get_pay(update: Update, context: CallbackContext):
     customer_choice = update.message.text
     if customer_choice == static_text.pay_buttons[1]:
         return MAIN_MENU
     elif customer_choice == static_text.pay_buttons[0]:
-        update.message.reply_text(text='ТУТ БУДЕТ МЕНЮ ОПЛАТЫ')
+        buy(update, context, context)
+
+def buy(update: Update, context: CallbackContext, cake_description):
+    # Создаем LabeledPrice с динамической ценой
+    price = LabeledPrice(label="Cake", amount=int(cake_description.bot_data["price"] * 100))  # цена в копейках (руб)
+
+    context.bot.send_invoice(update.effective_chat.id,
+                             title="Оплата за торт",
+                             description="Оплата за ваш заказанный торт",
+                             provider_token="284685063:TEST:NGNkZWYxMTU1MmIy",  # замените на ваш provider_token
+                             currency="rub",
+                             photo_url="URL_ВАШЕГО_ТОРТА",  # Замените на URL вашего изображения торта
+                             start_parameter="cake-payment",
+                             payload=f"cake-invoice-payload",
+                             # замените order_number на номер вашего заказа
+                             prices=[price])
+
+def pre_checkout_query(update: Update, context: CallbackContext):
+    query = update.pre_checkout_query
+    if query.invoice_payload != 'cake-invoice-payload':
+        # Отказываемся от оплаты, если payload не совпадает
+        context.bot.answer_pre_checkout_query(pre_checkout_query_id=query.id, ok=False,
+                                              error_message="Что-то пошло не так...")
+    else:
+        context.bot.answer_pre_checkout_query(pre_checkout_query_id=query.id, ok=True)
+
+def successful_payment(update: Update, context: CallbackContext):
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=f"Платёж на сумму {update.message.successful_payment.total_amount // 100} {update.message.successful_payment.currency} прошел успешно!!!")
