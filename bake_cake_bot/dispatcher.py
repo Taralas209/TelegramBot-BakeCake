@@ -42,6 +42,12 @@ bot_handlers = ConversationHandler(
         handlers.CALCULATE: [
             MessageHandler(Filters.text & ~Filters.command, handlers.calculate_order)
         ],
+        handlers.PAY: [
+            MessageHandler(Filters.text & ~Filters.command, handlers.get_pay)
+        ],
+        handlers.READY_ORDER: [
+            MessageHandler(Filters.text & ~Filters.command, handlers.get_order_for_ready_cakes)
+        ],
     },
     fallbacks=[
         CommandHandler("cancel", handlers.command_cancel)

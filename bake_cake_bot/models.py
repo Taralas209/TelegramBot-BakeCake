@@ -25,7 +25,6 @@ class Users(UUIDMixin, TimeStampedMixin):
     username = models.CharField(max_length=64, null=True, verbose_name='UserName')
     name = models.CharField(max_length=256, null=True, verbose_name='Имя')
     phone = PhoneNumberField(verbose_name='Номер телефона', blank=True)
-    is_admin = models.BooleanField(null=True, blank=True, default=False, verbose_name='Администратор')
     registration = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
@@ -40,42 +39,12 @@ class Users(UUIDMixin, TimeStampedMixin):
 
 
 class Order(models.Model):
-    number = models.AutoField(
-        verbose_name='Номер заказа',
-        primary_key=True,
-        unique=True
-    )
-    username = models.ForeignKey(
-        Users,
-        on_delete=models.SET_NULL,
-        null = True
-    )
-    price = models.FloatField(
-        verbose_name='Цена',
-        default=0.0
-    )
-    init_date = models.DateTimeField(
-        verbose_name='Дата создания заказа',
-        default=timezone.now()
-    )
-    delivery_date = models.DateTimeField(
-        verbose_name='Дата и время доставки',
-        default=None
-    )
-    address = models.TextField(
-        verbose_name='Адрес доставки',
-        max_length=500
-    )
-    promocode = models.CharField(
-        verbose_name='Промокод',
-        max_length=100,
-        blank=True
-    )
-    comment = models.TextField(
-        verbose_name='Комментарий',
-        max_length=1000,
-        blank=True
-    )
+    number = models.AutoField(verbose_name='Номер заказа', primary_key=True, unique=True)
+    username = models.ForeignKey(Users, on_delete=models.SET_NULL, null=True)
+    price = models.FloatField(verbose_name='Цена', default=0.0)
+    init_date = models.DateTimeField(verbose_name='Дата создания заказа',default=timezone.now())
+    delivery_date = models.DateTimeField(verbose_name='Дата и время доставки', default=None)
+    address = models.TextField(verbose_name='Адрес доставки', max_length=500)
 
     def __str__(self):
         return f'Заказ номер {self.number}'
