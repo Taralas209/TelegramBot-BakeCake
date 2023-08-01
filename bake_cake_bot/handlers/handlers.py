@@ -9,7 +9,7 @@ from .keyboard_utils import make_keyboard_for_start_command, make_main_menu_keyb
     make_topping_keyboard, make_layer_keyboard, make_pay_keyboard
 
 AUTH, CREATE_USER, USER_PHONE, MAIN_MENU, ORDER, ORDER_CAKE, LAYER, DECOR, TOPPING, BERRIES, \
-    CALCULATE, PAY, READY_ORDER = range(13)
+    CALCULATE, PAY, READY_ORDER, CHECK_ORDER = range(14)
 
 
 def command_start(update: Update, context):
@@ -100,10 +100,23 @@ def get_main_menu(update: Update, _):
                 update.message.reply_text(text=ready_to_order_cake, reply_markup=make_order_menu_keyboard())
         return ORDER
     elif customer_choise == static_text.main_menu_button_text[1]:
-        update.message.reply_text(text='ТУТ БУДЕТ МЕНЮ ПРОВЕРИТЬ ЗАКАЗ')
-        return MAIN_MENU
+        update.message.reply_text(text='Какой заказ проверяем? Введите номер:')
+        return CHECK_ORDER
     elif customer_choise == static_text.main_menu_button_text[2]:
-        update.message.reply_text(text='ТУТ БУДЕТ МЕНЮ ИСТОРИЯ ЗАКАЗОВ')
+        user_id = update.message.from_user.to_dict()
+        user = Users.objects.get(telegram_id=user_id['id'])
+        orders = Order.objects.filter(username=user)
+        if orders:
+            update.message.reply_text(text='Ваши предыдущие заказы:')
+            for order in orders:
+                order_text = f'{order}\n' \
+                             f'Цена - {order.price} ру.\n' \
+                             f'Создан - {order.init_date}\n' \
+                             f'Доставка по адресу - {order.address}'
+                update.message.reply_text(text=order_text)
+        else:
+            update.message.reply_text(text='Вы еще ничего не заказывали')
+        update.message.reply_text(text=static_text.something_else, reply_markup=make_main_menu_keyboard())
         return MAIN_MENU
     elif customer_choise == static_text.main_menu_button_text[3]:
         update.message.reply_text(text=static_text.contacts)
@@ -213,9 +226,31 @@ def get_order_for_ready_cakes(update: Update, cake_description):
     return ORDER_CAKE
 
 
+def get_check_order(update: Update, _):
+    order = update.message.text
+    if Order.objects.filter(number=order):
+        need_order = Order.objects.get(number=order)
+        if need_order.delivery_date > datetime.datetime.now():
+            text = f'{need_order} доставляется\n' \
+                  f'время доставки - {need_order.delivery_date}'
+            update.message.reply_text(text=text)
+            update.message.reply_text(text=static_text.something_else, reply_markup=make_main_menu_keyboard())
+            return MAIN_MENU
+        else:
+            text = f'{need_order} доставлен'
+            update.message.reply_text(text=text)
+            update.message.reply_text(text=static_text.something_else, reply_markup=make_main_menu_keyboard())
+            return MAIN_MENU
+    else:
+        update.message.reply_text(text='не могу найти такой заказ')
+        update.message.reply_text(text=static_text.something_else, reply_markup=make_main_menu_keyboard())
+        return MAIN_MENU
+
+
 def get_pay(update: Update, context: CallbackContext):
     customer_choice = update.message.text
     if customer_choice == static_text.pay_buttons[1]:
+        update.message.reply_text(text=static_text.something_else, reply_markup=make_main_menu_keyboard())
         return MAIN_MENU
     elif customer_choice == static_text.pay_buttons[0]:
         buy(update, context, context)
@@ -247,3 +282,6 @@ def pre_checkout_query(update: Update, context: CallbackContext):
 def successful_payment(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=f"Платёж на сумму {update.message.successful_payment.total_amount // 100} {update.message.successful_payment.currency} прошел успешно!!!")
+
+    update.message.reply_text(text=static_text.something_else, reply_markup=make_main_menu_keyboard())
+    return MAIN_MENU
