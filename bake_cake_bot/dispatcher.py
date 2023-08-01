@@ -48,6 +48,9 @@ bot_handlers = ConversationHandler(
         handlers.READY_ORDER: [
             MessageHandler(Filters.text & ~Filters.command, handlers.get_order_for_ready_cakes)
         ],
+        handlers.CHECK_ORDER: [
+            MessageHandler(Filters.text & ~Filters.command, handlers.get_check_order)
+        ],
     },
     fallbacks=[
         CommandHandler("cancel", handlers.command_cancel)
