@@ -1,14 +1,16 @@
+import datetime
+
 from telegram import Update
 from telegram.ext import ConversationHandler, CallbackContext
 
 from . import static_text
-from bake_cake_bot.models import Users, Cake, Shape, Layer, Topping, Decor, Berries
+from bake_cake_bot.models import Users, Cake, Shape, Layer, Topping, Decor, Berries, Order
 from .keyboard_utils import make_keyboard_for_start_command, make_main_menu_keyboard, make_order_menu_keyboard, \
     make_keyboard_for_ready_to_order, make_decor_keyboard, make_shape_keyboard, make_berries_keyboard, \
-    make_topping_keyboard, make_layer_keyboard
+    make_topping_keyboard, make_layer_keyboard, make_pay_keyboard
 
-
-AUTH, CREATE_USER, USER_PHONE, MAIN_MENU, ORDER, ORDER_CAKE, LAYER, DECOR, TOPPING, BERRIES, CALCULATE = range(11)
+AUTH, CREATE_USER, USER_PHONE, MAIN_MENU, ORDER, ORDER_CAKE, LAYER, DECOR, TOPPING, BERRIES, \
+    CALCULATE, PAY, READY_ORDER = range(13)
 
 
 def command_start(update: Update, context):
@@ -110,22 +112,20 @@ def get_main_menu(update: Update, _):
         return MAIN_MENU
     else:
         update.message.reply_text(text=static_text.not_text_enter, reply_markup=make_main_menu_keyboard())
-        return MAIN_MENU # Вернет меню на случай ручного ввода
+        return MAIN_MENU  # Вернет меню на случай ручного ввода
 
 
 def get_order(update: Update, cake_description):
     customer_choise = update.message.text
     if customer_choise == static_text.order_buttons[0]:
         update.message.reply_text(text=static_text.ready_order, reply_markup=make_keyboard_for_ready_to_order())
-        update.message.reply_text(text=static_text.ordering)
-        update.message.reply_text(text=static_text.address)
-        return ORDER_CAKE
+        return READY_ORDER
     elif customer_choise == static_text.order_buttons[1]:
         update.message.reply_text(text=static_text.individual_order)
         update.message.reply_text(text=static_text.select_shape, reply_markup=make_shape_keyboard())
         return LAYER
     else:
-        return MAIN_MENU # Вернет меню на случай ручного ввода
+        return MAIN_MENU  # Вернет меню на случай ручного ввода
 
 
 def get_layer(update: Update, cake_description):
@@ -161,6 +161,7 @@ def calculate_order(update: Update, cake_description):
     topping = Topping.objects.get_or_create(name=f'{cake_description.bot_data["topping"]}')
     berries = Berries.objects.get_or_create(name=f'{cake_description.bot_data["berries"]}')
     total_price = shape[0].price + layer[0].price + decor[0].price + topping[0].price + berries[0].price
+    cake_description.bot_data['price'] = total_price
     order_text = f'Итого Ваш заказ:\n' \
                  f'Форма торта - {cake_description.bot_data["shape"]}, цена {shape[0].price} ру.\n' \
                  f'Количество слоев - {cake_description.bot_data["layer"]}, цена {layer[0].price} ру.\n' \
@@ -180,7 +181,42 @@ def command_cancel(update: Update, _):
     return ConversationHandler.END
 
 
+def get_order_for_cakes(update: Update, cake_description):
+    address = update.message.text
+    user_id = update.message.from_user.to_dict()
+    user = Users.objects.get(telegram_id=user_id['id'])
+    init_date = datetime.datetime.now()
+    delivery_date = init_date + datetime.timedelta(hours=2)
+    order = Order.objects.create(username=user,
+                                 init_date=init_date,
+                                 delivery_date=delivery_date,
+                                 address=address,
+                                 price=cake_description.bot_data['price'])
+    answer_text = f'{order}\n' \
+                  f'Предварительное время доставки:\n' \
+                  f'{order.delivery_date}\n' \
+                  f'по адресу {order.address}\n' \
+                  f'Просьба произвести оплату в сумме {cake_description.bot_data["price"]}'
+    update.message.reply_text(text=answer_text, reply_markup=make_pay_keyboard())
+    return PAY
 
-def get_order_for_cakes(update: Update, context: CallbackContext):
-    pass
-    #TODO:Вызывается после выбора торта в меню заказа. Далее необходимо собрать адрес доставки, вычислить время заказа и указать время доставки. Может еще что забыл
+
+def get_order_for_ready_cakes(update: Update, cake_description):
+    customer_choice = update.message.text
+    order = Cake.objects.get(name=customer_choice)
+    cake_description.bot_data["price"] = order.price
+    order_text = f'Ваш заказ:\n' \
+                 f'Торт {order.name}\n' \
+                 f'Цена {order.price} ру.\n'
+    update.message.reply_text(text=order_text)
+    update.message.reply_text(text=static_text.ordering)
+    update.message.reply_text(text=static_text.address)
+    return ORDER_CAKE
+
+
+def get_pay(update: Update, cake_description):
+    customer_choice = update.message.text
+    if customer_choice == static_text.pay_buttons[1]:
+        return MAIN_MENU
+    elif customer_choice == static_text.pay_buttons[0]:
+        update.message.reply_text(text='ТУТ БУДЕТ МЕНЮ ОПЛАТЫ')

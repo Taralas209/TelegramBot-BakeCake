@@ -5,7 +5,7 @@ from bake_cake_bot.models import *
 
 @admin.register(Users)
 class UsersAdmin(admin.ModelAdmin):
-    list_display = ['id', 'telegram_id', 'username', 'name', 'is_admin']
+    list_display = ['id', 'telegram_id', 'username', 'name']
     search_fields = ['telegram_id', 'username', 'phone']
 
 @admin.register(Order)
