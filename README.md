@@ -26,7 +26,8 @@ python3 manage.py runserver
 ```
 
 ### 5. Add token:
-положить токен в файл .env
+Create tokens and .env
 TELEGRAM_TOKEN=...
+BITLY_ACCESS_TOKEN=...
 
 The address of the admin panel: [admin_panel](http://127.0.0.1:8000/admin/).
